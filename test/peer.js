@@ -7,10 +7,25 @@ describe('Peer', function() {
   });
 
   // TODO
-  it('constructor', function() {
-    // Ensures alphanumeric id & key and aborts/return early
-    p = new Peer('123');
-    
+  it('constructor', function(done) {
+    // Ensures id & key valid and aborts/return early
+    var abort = Peer.prototype._abort;
+    var ab = false;
+    Peer.prototype._abort = function(err, msg) { ab = err }
+    p = new Peer('@123');
+    setTimeout(function() {
+      // abort called
+      expect(ab).to.be.equal('invalid-id');
+      // returns early
+      expect(p.connections === undefined).to.be.equal(true);
+
+      p = new Peer({key: '@123'});
+      setTimeout(function() {
+        expect(ab).to.be.equal('invalid-key');
+        done();
+      }, 0);
+      Peer.prototype._abort = abort;
+    }, 0);
 
     // sets id & calls _init()
     var init = false;
@@ -28,6 +43,7 @@ describe('Peer', function() {
     p = new Peer();
     expect(getId).to.be.equal(true);
     Peer.prototype._getId = peergetId;
+    console.log(1);
   });
 
   it('inherits from EventEmitter', function() {

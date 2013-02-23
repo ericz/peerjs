@@ -104,4 +104,10 @@ describe('util', function() {
     testRandom(util.randomToken);
   })
 
+  it('validateIdKey', function() {
+    expect(util.validateIdKey(31)).to.be.equal(true);
+    expect(util.validateIdKey('dfasf2a2_')).to.be.equal(false);
+    expect(util.validateIdKey('aCc-_ 12dz')).to.be.equal(false);
+    expect(util.validateIdKey('a-B_c 1')).to.be.equal(true);
+  })
 });
