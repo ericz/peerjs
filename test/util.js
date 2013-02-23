@@ -64,7 +64,16 @@ describe('util', function() {
     util.debug = false;
   })
 
-  it('setZeroTimeout')
+  it('setZeroTimeout', function(done) {
+    expect(util.setZeroTimeout).to.be.a('function');
+    expect(util.setZeroTimeout).to.have.length(1);
+    var called = false;
+    util.setZeroTimeout(function() { called = true; });
+    setTimeout(function() {
+      expect(called).to.be.equal(true);
+      done();
+    }, 0);
+  })
 
   it('blobToArrayBuffer', function(done) {
     var blob = new Blob(['hi']);
