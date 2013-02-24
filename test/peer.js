@@ -9,42 +9,33 @@ describe('Peer', function() {
 
   it('constructor', function(done) {
     // Ensures id & key valid and aborts/return early
-    var abort = Peer.prototype._abort;
-    var ab = false;
-    Peer.prototype._abort = function(err, msg) { ab = err }
+    var ab = intercept(Peer, Peer.prototype._abort);
     p = new Peer('@123');
     setTimeout(function() {
       // abort called
-      expect(ab).to.be.equal('invalid-id');
+      expect(ab.arguments[0]).to.be.equal('invalid-id');
       // returns early
       expect(p.connections === undefined).to.be.equal(true);
 
+      var ab = intercept(Peer, Peer.prototype._abort);
       p = new Peer({key: '@123'});
       setTimeout(function() {
-        expect(ab).to.be.equal('invalid-key');
+        expect(ab.arguments[0]).to.be.equal('invalid-key');
         expect(p.connections === undefined).to.be.equal(true);
-        // reset prototype
-        Peer.prototype._abort = abort;
         done();
       }, 1);
     }, 1);
 
     // sets id & calls _init()
-    var init = false;
-    var peerinit = Peer.prototype._init;
-    Peer.prototype._init = function() { init = true }
+    var init = intercept(Peer, Peer.prototype._init);
     var pp = new Peer('abc123');
     expect(pp.id).to.be.equal('abc123');
-    expect(init).to.be.equal(true);
-    Peer.prototype._init = peerinit;
+    expect(init).to.eql(true);
 
     // calls _getId when no id given
-    var getId = false;
-    var peergetId = Peer.prototype._getId;
-    Peer.prototype._getId = function() {getId = true }
+    var getId = intercept(Peer, Peer.prototype._getId);
     pp = new Peer();
     expect(getId).to.be.equal(true);
-    Peer.prototype._getId = peergetId;
   });
 
   it('inherits from EventEmitter', function() {
@@ -54,13 +45,11 @@ describe('Peer', function() {
   it('_getId')
 
  /*
-  * Opens socket for Peer
+  * create and start socket for Peer
   * and registers 'message', 'error', 'socket-error' listeners
   */
   it('_init', function() {
-    var callSocketStart = false;
-    var socketstartFn = Socket.prototype.start;
-    Socket.prototype.start = function() { callSocketStart = true };
+    var callSocketStart = intercept(Socket, Socket.prototype.start};
 
     p._init();
     // socket created
@@ -81,9 +70,6 @@ describe('Peer', function() {
 
     // socket start()
     expect(callSocketStart).to.be.equal(true);
-
-    // reset
-    Socket.prototype.start = socketstartFn;
   })
 
   it('_handleServerJSONMessage')

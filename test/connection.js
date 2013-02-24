@@ -8,19 +8,11 @@ describe('DataConnection', function() {
 
   // TODO
   it('constructor', function() {
-    // setup test
-    var init = false;
-    var initialize = DataConnection.prototype.initialize;
-    DataConnection.prototype.initialize = function() { init = true; }
-
+    var init = intercept(DataConnection, DataConnection.prototype.initialize);
     d = new DataConnection(123, 321);
-
     expect(d.id).to.be.equal(123);
     expect(d.peer).to.be.equal(321);
-
     expect(init).to.be.equal(true);
-    // reset
-    DataConnection.prototype.initialize = initialize;
   });
 
   it('inherits from EventEmitter', function() {

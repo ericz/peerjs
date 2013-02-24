@@ -5,6 +5,7 @@
   "devDependencies": {
     "uglify-js": "*",
     "mocha": "*",
-    "expect.js": "*"
+    "expect.js": "*",
+    "intercept.js": "*"
   }
 }
