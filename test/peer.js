@@ -1,45 +1,45 @@
-var p;
+var peer;
 
 describe('Peer', function() {
 
   beforeEach(function() {
-    p = new Peer();
+    peer = new Peer();
   });
 
 
   it('constructor', function(done) {
     // Ensures id & key valid and aborts/return early
-    var ab = intercept(Peer, Peer.prototype._abort);
-    p = new Peer('@123');
+    var ab = intercept(Peer.prototype, Peer.prototype._abort);
+    peer = new Peer('@123');
     setTimeout(function() {
       // abort called
-      expect(ab.arguments[0]).to.be.equal('invalid-id');
+      expect(ab().args[0]).to.be.equal('invalid-id');
       // returns early
-      expect(p.connections === undefined).to.be.equal(true);
+      expect(peer.connections === undefined).to.be.equal(true);
 
-      var ab = intercept(Peer, Peer.prototype._abort);
-      p = new Peer({key: '@123'});
+      ab = intercept(Peer.prototype, Peer.prototype._abort);
+      peer = new Peer({key: '@123'});
       setTimeout(function() {
-        expect(ab.arguments[0]).to.be.equal('invalid-key');
-        expect(p.connections === undefined).to.be.equal(true);
+        expect(ab().args[0]).to.be.equal('invalid-key');
+        expect(peer.connections === undefined).to.be.equal(true);
         done();
       }, 1);
     }, 1);
 
     // sets id & calls _init()
-    var init = intercept(Peer, Peer.prototype._init);
+    var init = intercept(Peer.prototype, Peer.prototype._init);
     var pp = new Peer('abc123');
     expect(pp.id).to.be.equal('abc123');
-    expect(init).to.eql(true);
+    expect(!!init()).to.eql(true);
 
     // calls _getId when no id given
-    var getId = intercept(Peer, Peer.prototype._getId);
+    var getId = intercept(Peer.prototype, Peer.prototype._getId);
     pp = new Peer();
-    expect(getId).to.be.equal(true);
+    expect(!!getId()).to.be.equal(true);
   });
 
   it('inherits from EventEmitter', function() {
-    expect(p instanceof EventEmitter).to.be.equal(true);
+    expect(peer instanceof EventEmitter).to.be.equal(true);
   })
 
   it('_getId')
@@ -49,27 +49,30 @@ describe('Peer', function() {
   * and registers 'message', 'error', 'socket-error' listeners
   */
   it('_init', function() {
-    var callSocketStart = intercept(Socket, Socket.prototype.start};
+    var callSocketStart = intercept(Socket.prototype, Socket.prototype.start);
 
-    p._init();
+    peer._init();
     // socket created
-    expect(p._socket instanceof Socket).to.be.equal(true);
+    expect(peer._socket instanceof Socket).to.be.equal(true);
     // test listeners
-    var callHandle = false, callAbort = false;
-    p._handleServerJSONMessage = function(data) { callHandle = data };
-    p._abort = function(type, msg) { callAbort = type + msg }
+    var callHandle = intercept(Peer.prototype, Peer.prototype._handleServerJSONMessage);
+    var callAbort = intercept(Peer.prototype, Peer.prototype._abort);
+    
     // 'message' listener calls _handleServerJSONMessage
-    p._socket.emit('message', 'hi');
-    expect(callHandle).to.be.equal('hi');
+    peer._socket.emit('message', 'hi');
+    expect(callHandle().args[0]).to.be.equal('hi');
+
     // 'error' listener calls _abort
-    p._socket.emit('error', 'err!!!');
-    expect(callAbort).to.be.equal('socket-errorerr!!!');
+    peer._socket.emit('error', 'err!!!');
+    expect(callAbort().args[1]).to.be.equal('err!!!');
+
     // 'close' listener calls _abort
-    p._socket.emit('close');
-    expect(callAbort).to.match(/^socket-closed/);
+    callAbort = intercept(Peer.prototype, Peer.prototype._abort);
+    peer._socket.emit('close');
+    expect(callAbort().args[0]).to.match(/^socket-closed/);
 
     // socket start()
-    expect(callSocketStart).to.be.equal(true);
+    expect(!!callSocketStart()).to.be.equal(true);
   })
 
   it('_handleServerJSONMessage')

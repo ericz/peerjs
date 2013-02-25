@@ -8,11 +8,11 @@ describe('DataConnection', function() {
 
   // TODO
   it('constructor', function() {
-    var init = intercept(DataConnection, DataConnection.prototype.initialize);
+    var init = intercept(DataConnection.prototype, DataConnection.prototype.initialize);
     d = new DataConnection(123, 321);
     expect(d.id).to.be.equal(123);
     expect(d.peer).to.be.equal(321);
-    expect(init).to.be.equal(true);
+    expect(!!init()).to.be.equal(true);
   });
 
   it('inherits from EventEmitter', function() {
@@ -21,13 +21,9 @@ describe('DataConnection', function() {
 
   it('initialize');
 
-  it('_setupOffer', function() {
+  it('_setupOffer');
 
-  });
-
-  it('_setupDataChannel', function() {
-
-  });
+  it('_setupDataChannel');
 
   // TODO
   it('_startPeerConnection', function() {
@@ -35,9 +31,7 @@ describe('DataConnection', function() {
     expect(d._pc instanceof RTCPeerConnection).to.be.equal(true);
   });
 
-  it('_setupIce', function() {
-
-  });
+  it('_setupIce');
 
   /*
    *  sets _dc.onopen, _dc.onmessage, _dc.onclose
@@ -64,40 +58,22 @@ describe('DataConnection', function() {
     expect(onclose).to.be.equal(true);
   });
 
-  it('_makeOffer', function() {
+  it('_makeOffer');
 
-  });
+  it('_makeAnswer');
 
-  it('_makeAnswer', function() {
+  it('_cleanup');
 
-  });
+  it('_handleDataMessage');
 
-  it('_cleanup', function() {
+  it('close');
 
-  });
+  it('send');
 
-  it('_handleDataMessage', function() {
+  it('handleSDP');
 
-  });
+  it('handleCandidate');
 
-  it('close', function() {
-
-  });
-
-  it('send', function() {
-
-  });
-
-  it('handleSDP', function() {
-
-  });
-
-  it('handleCandidate', function() {
-
-  });
-
-  it('handleLeave"', function() {
-
-  });
+  it('handleLeave"');
 
 });
