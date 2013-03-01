@@ -5,7 +5,7 @@ Each peer simply provides a identifier with which other peers using the same API
 
 ##[http://peerjs.com](http://peerjs.com)
 
-
+ 
 **Include the library**
 
     <script src="http://cdn.peerjs.com/0/peer.js"></script>
